@@ -5,8 +5,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from blogr.db import get_db
-
+from blogger.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -48,7 +47,7 @@ def login():
         db = get_db()
         error = None
         user = db.execute(
-            'SELECT username, password FROM user WHERE username = ?', (username,)
+            'SELECT id, username, password FROM user WHERE username = ?', (username,)
         ).fetchone()
 
         if user is None:

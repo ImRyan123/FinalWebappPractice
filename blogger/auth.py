@@ -1,13 +1,19 @@
 import functools
 
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 from blogger.db import get_db
 
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+
+
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -23,6 +29,7 @@ def register():
         elif not password:
             error = 'Password is required.'
 
+
         if error is None:
             try:
                 db.execute(
@@ -35,9 +42,12 @@ def register():
             else:
                 return redirect(url_for("auth.login"))
 
+
         flash(error)
 
+
     return render_template('auth/register.html')
+
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
@@ -47,8 +57,9 @@ def login():
         db = get_db()
         error = None
         user = db.execute(
-            'SELECT id, username, password FROM user WHERE username = ?', (username,)
+            'SELECT username, password FROM user WHERE username = ?', (username,)
         ).fetchone()
+
 
         if user is None:
             error = 'Incorrect username.'
@@ -61,13 +72,19 @@ def login():
             session['user_id'] = user['id']
             return redirect(url_for('index'))
 
+
         flash(error)
 
+
     return render_template('auth/login.html')
+
+
+
 
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
+
 
     if user_id is None:
         g.user = None
@@ -76,13 +93,18 @@ def load_logged_in_user():
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
+
+
+
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
 
+
         return view(**kwargs)
+
 
     return wrapped_view
 

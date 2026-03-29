@@ -1,59 +1,57 @@
-import os, time
+import numpy as np
+import os
+import time
 
 def clear():
     os.system("cls")
 
 class Grid:
-    
+
     def __init__(self, grid_y, grid_x):
         self.grid_y = grid_y
         self.grid_x = grid_x
-        
+
         self.player_position = [self.grid_y // 2, self.grid_x // 2]
-        
+
         self.empty_cell = "#"
         self.player_cell = "@"
-        self.grid = []
-        
-        self._make_grid()
-        
-    def _make_grid(self):
-        for _ in range(self.grid_y):
-            self.grid.append([self.empty_cell for x in range(self.grid_x)])
-        
-    def move_player(self, index):
-        new_y = index[0] + self.player_position[0]
-        new_x = index[1] + self.player_position[1]
-        
-        if new_y >= 0 and new_y < self.grid_y and new_x >= 0 and new_x < self.grid_x:
-            new_y, new_x = self.player_position
+
+        # Create NumPy grid filled with empty cells
+        self.grid = np.full((self.grid_y, self.grid_x), self.empty_cell)
+
+    def move_player(self, direction):
+        dy, dx = direction
+
+        new_y = self.player_position[0] + dy
+        new_x = self.player_position[1] + dx
+
+        if 0 <= new_y < self.grid_y and 0 <= new_x < self.grid_x:
+            self.player_position = [new_y, new_x]
         else:
             print("ERROR")
-        
-    def __str__(self):
-        rows = []
 
-        for y, row in enumerate(self.grid):
-            if y == self.player_position[0]:
-                new_row = []
-                for x in range(len(row)):
-                    if x == self.player_position[1]:
-                        new_row.append(self.player_cell)
-                    else:
-                        new_row.append(self.empty_cell)
-                rows.append("  ".join(new_row))
-            else:
-                rows.append("  ".join(row))
+    def render(self):
+        # Reset grid to empty
+        self.grid[:] = self.empty_cell
 
-        return "\n".join(rows)
+        # Place player at current position
+        y, x = self.player_position
+        self.grid[y, x] = self.player_cell
+
+        return "\n".join("  ".join(row) for row in self.grid)
+
 
 def main(delay):
-    grid = Grid(11, 11)    
+    grid = Grid(11, 11)
+
     while True:
-        print(grid)
+        print(grid.render())
         time.sleep(delay)
+
+        # Move player up each frame
         grid.move_player((-1, 0))
+
         clear()
-        
-    
+
+
 main(0.05)

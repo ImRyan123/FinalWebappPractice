@@ -57,7 +57,7 @@ def login():
         db = get_db()
         error = None
         user = db.execute(
-            'SELECT username, password FROM user WHERE username = ?', (username,)
+            'SELECT id, username, password FROM user WHERE username = ?', (username,)
         ).fetchone()
 
 

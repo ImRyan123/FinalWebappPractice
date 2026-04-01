@@ -24,11 +24,17 @@ def create_app(test_config=None):
     # Ensure the instance folder exists (required for storing the database file)
     os.makedirs(app.instance_path, exist_ok=True)
 
-    # Define a simple route for the homepage
+    # Define a simple route for the homepage that displays blog posts
     @app.route('/')
     def index():
-        # Render and return the index.html template
-        return render_template("index.html")
+        from . import db
+        db_conn = db.get_db()
+        posts = db_conn.execute(
+            'SELECT p.id, title, body, created, author_id, username'
+            ' FROM post p JOIN user u ON p.author_id = u.id'
+            ' ORDER BY created DESC'
+        ).fetchall()
+        return render_template('blog/index.html', posts=posts)
    
     # Initialize database functionality and attach it to the app
     from . import db
@@ -37,6 +43,10 @@ def create_app(test_config=None):
     # Import and register authentication blueprint (routes grouped in auth module)
     from . import auth
     app.register_blueprint(auth.bp)
+
+    # Import and register blog blueprint
+    from . import blog
+    app.register_blueprint(blog.bp)
 
     # Return the configured Flask app instance
     return app

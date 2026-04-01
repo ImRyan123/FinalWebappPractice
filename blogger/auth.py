@@ -72,7 +72,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']  # FIX: now valid since id is selected
-            return redirect(url_for('index'))
+            return redirect(url_for('blog.index'))
 
         # Show login error
         flash(error)
@@ -112,4 +112,4 @@ def login_required(view):
 def logout():
     # Clear session to log the user out
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('blog.index'))

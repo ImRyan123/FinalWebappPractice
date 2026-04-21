@@ -37,7 +37,7 @@ class Grid:
             self.grid[indexes[i][0]][indexes[i][1]] = self.loading_cycle[indexes[i][2]]
             print("\n".join(" ".join(row) for row in self.grid))
             time.sleep(0.05)
-            #os.system('cls')
+            os.system('cls')
         
     def __str__(self):
         return "\n".join("".join(row) for row in self.grid)
